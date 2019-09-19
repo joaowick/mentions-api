@@ -1,13 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
-const Mentions = require('./models/mentions');
+
+//App
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 //Database
 mongoose.connect(process.env.DATABASE_CONNECTION_STRING, {
     useNewUrlParser: true,
-    useFindAndModify: true,
-    useCreateIndex: true
+    // useFindAndModify: true,
+    // useCreateIndex: true
 })
 
 const db = mongoose.connection;
@@ -31,11 +36,14 @@ process.on('SIGINT', () => {
     })
 })
 
+//Load models
+const Mentions = require('./models/mentions');
 
-
-const app = express();
-
+//Load routes
 const indexRoutes = require('./routes/index-routes');
 app.use('/', indexRoutes);
+
+const mentionsRoutes = require('./routes/mentions-routes');
+app.use('/mentions', mentionsRoutes);
 
 module.exports = app;
